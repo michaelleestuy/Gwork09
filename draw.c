@@ -84,7 +84,10 @@ void slhelper(int x0, int y0, int z0, int x1, int y1, int z1, int x2, int y2, in
     xm = x2;
     ym = y2;
   }
-
+  
+  xt = (x0 + x1 + x2) - xb - xm;
+  yt = (y0 + y1 + y2) - yb - ym;
+  /*
   if(t = 0){
     xt = x0;
     yt = y0;
@@ -97,7 +100,9 @@ void slhelper(int x0, int y0, int z0, int x1, int y1, int z1, int x2, int y2, in
     xt = x2;
     yt = y2;
   }
+  */
 
+  
   
 
 }
