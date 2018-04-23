@@ -103,6 +103,35 @@ void slhelper(int x0, int y0, int z0, int x1, int y1, int z1, int x2, int y2, in
   */
 
   
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  int i,c;
+  float cx1 = (yt - yb) / (xt - xb);
+  float cx2a = (ym - yb) / (xm - xb);
+  float cx2b = (yt - ym) / (xt - xm);
+
+
+  float dx1 = 1 / cx1;
+  float dx2a = 1 / cx2a;
+  float dx2b = 1 / cx2b;
+
+  for(i = yb; i < yt; i++){
+
+    if(i < ym){
+      draw_line( (i - yb) * dx1 + xb,
+		 i,
+		 0,
+		 (i - yb) * dx2a + xb,
+		 i,
+		 0,
+		 s, zb, c);
+
+
+
+  }
+  
+  
   
 
 }
