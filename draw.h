@@ -4,6 +4,9 @@
 #include "matrix.h"
 #include "ml6.h"
 
+
+void slhelper(int x0, int y0, int z0, int x1, int y1, int z1, int x2, int y2, int z2, screen s, zbuffer zb, color c);
+
 void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb );
 
 //polygon organization

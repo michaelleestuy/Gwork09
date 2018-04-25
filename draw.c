@@ -8,6 +8,29 @@
 #include "math.h"
 #include "gmath.h"
 
+
+int max(int a, int b, int c){
+  if (a > b && a > c) {
+    return a;
+  }
+  else if (b > c) {
+    return b;
+  }
+  return c;    
+}
+
+int min(int a, int b, int c){
+  if (a < b && a < c) {
+    return a;
+  }
+  else if (b < c) {
+    return b;
+  }      
+  return c;
+}
+
+
+
 /*======== void scanline_convert() ==========
   Inputs: struct matrix *points
           int i
@@ -20,104 +43,97 @@
   Color should be set differently for each polygon.
   ====================*/
 void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
+  color c;
+  c.red = (i * 55)%255;
+  c.green = (i * 55 - 80)%255;
+  c.blue = (i * 55 + 80)%255;
   
-
-  
+  slhelper(points->m[0][i * 3],
+	   points->m[1][i * 3],
+	   points->m[2][i * 3],
+	   points->m[0][i * 3 + 1],
+	   points->m[1][i * 3 + 1],
+	   points->m[2][i * 3 + 1],
+	   points->m[0][i * 3 + 2],
+	   points->m[1][i * 3 + 2],
+	   points->m[2][i * 3 + 2],
+	   s, zb, c);  
 
 }
 
-void slhelper(int x0, int y0, int z0, int x1, int y1, int z1, int x2, int y2, int z2, screen s, zbuffer zb){
-  int t, b, m;
-  if(y0 > y1 && y0 > y2){
-    t = 0;
-    if(y1 < y2){
-      b = 1;
-    }
-    else{
-      b = 2;
-    }
-  }
-  else if(y1 > y2){
-    t = 1;
-    if(y0 > y2){
-      b = 2;
-    }
-    else{
-     b = 0;
-    }
-  }
-  else{
-    t = 2;
-    if(y0 < y1){
-      b = 0;
-    }
-    else{
-      b = 1;
-    }
-  }
-  m = 3 - b - t;
-  
-  int xb, xm, xt, yb, ym, yt;
+void slhelper(int x0, int y0, int z0, int x1, int y1, int z1, int x2, int y2, int z2, screen s, zbuffer zz, color c){
+  float xt, xm, xb, yt, ym, yb, zt, zm, zb;
 
-  if(b = 0){
-    xb = x0;
-    yb = y0;
-  }
-  if(b = 1){
-    xb = x1;
-    yb = y1;
-  }
-  if(b = 2){
-    xb = x2;
-    yb = y2;
-  }
-
-  if(m = 0){
-    xm = x0;
-    ym = y0;
-  }
-  if(m = 1){
-    xm = x1;
-    ym = y1;
-  }
-  if(m = 2){
-    xm = x2;
-    ym = y2;
-  }
-  
-  xt = (x0 + x1 + x2) - xb - xm;
-  yt = (y0 + y1 + y2) - yb - ym;
-  /*
-  if(t = 0){
-    xt = x0;
+  if (y0 == max(y0, y1, y2)) {
     yt = y0;
+    xt = x0;
+    zt = z0;
   }
-  if(t = 1){
-    xt = x1;
-    yt = y1;
-  }
-  if(t = 2){
-    xt = x2;
-    yt = y2;
-  }
-  */
 
+  if (y1 == max(y0, y1, y2)){
+    yt = y1;
+    xt = x1;
+    zt = z1;
+  }
+
+  if (y2 == max(y0, y1, y2)){
+    yt = y2;
+    xt = x2;
+    zt = z2;
+  }
+
+  if (y0 == min(y0, y1, y2)) {
+    yb = y0;
+    xb = x0;
+    zb = z0;
+  }
+
+  if (y1 == min(y0, y1, y2)){
+    yb = y1;
+    xb = x1;
+    zb = z1;
+  }
+
+  if (y2 == min(y0, y1, y2)){
+    yb = y2;
+    xb = x2;
+    zb = z2;
+  }
+
+  xm = x1 + x2 + x0- xb - xt;
+  ym = y1 + y2 + y0 - yb - yt;
+  zm = z1 + z2 + z0 - zb - zt;
   
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-  int i,c;
-  float cx1 = (yt - yb) / (xt - xb);
-  float cx2a = (ym - yb) / (xm - xb);
-  float cx2b = (yt - ym) / (xt - xm);
+  int i;
+  float dx1, dx2a, dx2b;
+  if(yt - yb != 0){
+    dx1 = (xt - xb) / (yt - yb);
+  }
+  else{
+    dx1 = 19000000;
+  }
+  
+  if(ym - yb != 0){
+    dx2a = (xm - xb) / (ym - yb);
+  }
+  else{
+    dx2a = 10000000;
+  }
+  
+  if(yt - ym != 0){
+    dx2b = (xt - xm) / (yt - ym);
+  }
+  else{
+    dx2b = 100000000;
+  }
 
-
-  float dx1 = 1 / cx1;
-  float dx2a = 1 / cx2a;
-  float dx2b = 1 / cx2b;
 
   for(i = yb; i < yt; i++){
 
+    
     if(i < ym){
       draw_line( (i - yb) * dx1 + xb,
 		 i,
@@ -125,10 +141,17 @@ void slhelper(int x0, int y0, int z0, int x1, int y1, int z1, int x2, int y2, in
 		 (i - yb) * dx2a + xb,
 		 i,
 		 0,
-		 s, zb, c);
-
-
-
+		 s, zz, c);
+    }
+    else{
+      draw_line( (i - yb) * dx1 + xb,
+		 i,
+		 0,
+		 (i - ym) * dx2b + xm,
+		 i,
+		 0,
+		 s, zz, c);
+    }
   }
   
   
@@ -186,6 +209,13 @@ void draw_polygons(struct matrix *polygons, screen s, zbuffer zb, color c ) {
 
     if ( normal[2] > 0 ) {
 
+
+      scanline_convert(polygons, point / 3, s, zb);
+
+
+
+      
+      
       draw_line( polygons->m[0][point],
                  polygons->m[1][point],
                  polygons->m[2][point],
@@ -207,6 +237,7 @@ void draw_polygons(struct matrix *polygons, screen s, zbuffer zb, color c ) {
                  polygons->m[1][point+2],
                  polygons->m[2][point+2],
                  s, zb, c);
+      
     }
   }
 }
