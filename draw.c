@@ -109,27 +109,35 @@ void slhelper(int x0, int y0, int z0, int x1, int y1, int z1, int x2, int y2, in
 
   int i;
   float dx1, dx2a, dx2b;
+  float dz1, dz2a, dz2b;
   if(yt - yb != 0){
     dx1 = (xt - xb) / (yt - yb);
+    dz1 = (zt - zb) / (yt - yb);
   }
   else{
     dx1 = 19000000;
+    dz1 = 1000000;
   }
   
   if(ym - yb != 0){
     dx2a = (xm - xb) / (ym - yb);
+    dz2a = (zm - zb) / (ym - yb);
   }
   else{
     dx2a = 10000000;
+    dz2a = 10000000;
   }
   
   if(yt - ym != 0){
     dx2b = (xt - xm) / (yt - ym);
+    dz2b = (zt - zm) / (yt - ym);
   }
   else{
     dx2b = 100000000;
+    dz2b = 10000000;
   }
-
+  //////////////////////////////////
+ 
 
   for(i = yb; i < yt; i++){
 
@@ -137,19 +145,19 @@ void slhelper(int x0, int y0, int z0, int x1, int y1, int z1, int x2, int y2, in
     if(i < ym){
       draw_line( (i - yb) * dx1 + xb,
 		 i,
-		 0,
+		 (i - yb) * dz1 + zb,
 		 (i - yb) * dx2a + xb,
 		 i,
-		 0,
+		 (i - yb) * dz2a + zb,
 		 s, zz, c);
     }
     else{
       draw_line( (i - yb) * dx1 + xb,
 		 i,
-		 0,
+		 (i - yb) * dz1 + zb,
 		 (i - ym) * dx2b + xm,
 		 i,
-		 0,
+		 (i - ym) * dz2b + zm,
 		 s, zz, c);
     }
   }
